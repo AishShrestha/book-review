@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UserService } from "src/users/user.service";
+import { Get, HttpStatus, Injectable, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { LoginUserDto } from "./dto/login-user-dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entity/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
+
 
 @Injectable()
 export class AuthService {
@@ -42,4 +42,15 @@ export class AuthService {
     async generateToken(payload: { id: string, username: string }): Promise<string> {
         return this.jwtService.signAsync(payload);
     }
+    googleLogin(req) {
+        if (!req.user) {
+            return 'No user from google';
+        }
+
+        return {
+            message: 'User information from google',
+            user: req.user,
+        };
+    }
+
 }
