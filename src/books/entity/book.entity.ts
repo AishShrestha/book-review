@@ -1,6 +1,6 @@
 import { Review } from "src/reviews/entity/review.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { date } from "zod";
+
 
 @Entity()
 export class Book {

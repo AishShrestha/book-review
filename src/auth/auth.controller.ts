@@ -17,28 +17,29 @@ export class AuthController {
     async login(@Body() loginUserDto: LoginUserDto): Promise<string> {
         return await this.authService.login(loginUserDto);
     }
-
-    @Get("/facebook")
-    @UseGuards(AuthGuard("facebook"))
-    async facebookLogin(): Promise<any> {
-        return HttpStatus.OK;
+    @Get('google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth() {
+      // Initiates Google login
     }
-
-    @Get("/facebook/redirect")
-    @UseGuards(AuthGuard("facebook"))
-    async facebookLoginRedirect(@Req() req: Request): Promise<any> {
-        return {
-            statusCode: HttpStatus.OK,
-            // data: req.user,
-        };
-    }
-    @Get()
-    @UseGuards(AuthGuard("google"))
-    async googleAuth(@Req() req) { }
 
     @Get('google-redirect')
     @UseGuards(AuthGuard("google"))
     googleAuthRedirect(@Req() req) {
         return this.authService.googleLogin(req);
     }
+
+  @Get('facebook')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuth() {
+    // Initiates Facebook login
+  }
+
+  @Get('facebook/redirect')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuthRedirect(@Req() req: any) {
+    const token = await this.authService.generateToken(req.user);
+    console.log("Token:",token);
+    return { message: 'Facebook login successful', token };
+  }
 }

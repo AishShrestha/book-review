@@ -40,7 +40,9 @@ export class AuthService {
     }
 
     async generateToken(payload: { id: string, username: string }): Promise<string> {
-        return this.jwtService.signAsync(payload);
+        console.log(payload);
+        console.log(this.jwtService.sign(payload));
+        return this.jwtService.sign(payload);
     }
     googleLogin(req) {
         if (!req.user) {
