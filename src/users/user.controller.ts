@@ -1,11 +1,14 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { UserService } from "./user.service";
 import { User } from "./entity/user.entity";
-import { CreateUserDto } from "./dto/create-user-dto";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { AuthGuard } from "src/guard/auth.guard";
 import { Roles } from "src/decorator/role.decorator";
 import { RolesGuard } from "src/guard/role.guard";
+import { ChangePasswordDto } from "./dto/change-password.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @ApiTags('Users')
 @Controller('users')
@@ -16,11 +19,7 @@ export class UserController {
     ) { }
 
     @Post('/register')
-    @ApiOperation({ summary: 'Register a new user' })
-    @ApiResponse({ status: 201, description: 'User successfully created' })
-    @ApiResponse({ status: 400, description: 'Invalid input' })
     @UsePipes(ValidationPipe)
-    @ApiBody({ type: CreateUserDto })
     async createUser(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
@@ -29,10 +28,6 @@ export class UserController {
     @Roles('admin')
     @UseGuards(AuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get all users with pagination (admin only)' })
-    @ApiResponse({ status: 200, description: 'List of users retrieved successfully' })
-    @ApiQuery({ name: 'page', required: false, description: 'Page number for pagination', example: 1 })
-    @ApiQuery({ name: 'limit', required: false, description: 'Number of results per page', example: 10 })
     async findAll(
         @Query('page') page?: number,
         @Query('limit') limit?: number
@@ -43,10 +38,47 @@ export class UserController {
     @Get('/self')
     @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get details of the currently authenticated user' })
-    @ApiResponse({ status: 200, description: 'Authenticated user details retrieved successfully' })
     async findSelf(@Req() req: Request): Promise<User> {
         const userId = req['user'].id;
         return this.userService.findOne(userId);
     }
+
+    @Post('/change-password')
+    @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
+    async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Req() req:any){
+        const userId = req['user'].id;
+        return this.userService.changePassword(userId, changePasswordDto);
+    }
+    @Post('/forgot-password')
+    @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto){
+        return this.userService.sendForgotPasswordLink(forgotPasswordDto);
+    }
+
+    @Patch('/:id')
+    @UseGuards(AuthGuard)
+    @UsePipes(ValidationPipe)
+    @ApiBearerAuth()
+    async update(@Body() updateUserDto: UpdateUserDto,@Param('id') id:string) {
+
+        return this.userService.update(id, updateUserDto);
+    }
+
+    @ApiBearerAuth()
+    @Roles('admin')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Delete('/:id')
+    async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
+      return this.userService.deleteUser(id);
+    }
+  
+
+
+
+
+
 }
