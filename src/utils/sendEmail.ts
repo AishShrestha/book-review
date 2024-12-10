@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 
 @Injectable()
 export class MailerService {
@@ -11,8 +15,8 @@ export class MailerService {
             port: 587,
             secure: false,
             auth: {
-                user: "sandip.axios@gmail.com",
-                pass: "khgj gndr xclz wsta",
+                user: process.env.MAILER_ID,
+                pass: process.env.MAILER_PASS,
             },
         });
     }
