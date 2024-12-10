@@ -1,0 +1,36 @@
+services:
+  app:
+    image: book-review-img:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: book-review-app
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=kanekiken
+      - DB_NAME=book-review
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/media/ayush-shrestha/New Storage/Web/book-review:/app"
+      - /app/node_modules
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    container_name: book-review-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=kanekiken
+      - POSTGRES_DB=book-review
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
