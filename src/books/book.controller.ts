@@ -19,10 +19,6 @@ export class BookController {
     @UseGuards(AuthGuard, RolesGuard)
     @UsePipes(ValidationPipe)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Add a new book' })
-    @ApiResponse({ status: 201, description: 'Book created successfully' })
-    @ApiResponse({ status: 400, description: 'Bad Request. Validation failed.' })
-    @ApiBody({ type: CreateBookDto })
     async addBook(@Body() createBookDto: CreateBookDto): Promise<Book> {
         return await this.bookService.create(createBookDto);
     }
@@ -31,24 +27,12 @@ export class BookController {
     @Roles('admin')
     @UseGuards(AuthGuard, RolesGuard)
     @UsePipes(ValidationPipe)
-    @ApiOperation({ summary: 'Update an existing book' })
-    @ApiResponse({ status: 200, description: 'Book updated successfully.' })
-    @ApiResponse({ status: 404, description: 'Book not found.' })
-    @ApiParam({ name: 'id', description: 'ID of the book to update' })
-    @ApiBody({ type: UpdateBookDto })
     async updateBook(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto): Promise<Book> {
         return await this.bookService.update(id, updateBookDto);
     }
     @Get('/')
     @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get a list of books with optional filters' })
-    @ApiResponse({ status: 200, description: 'Books retrieved successfully.' })
-    @ApiQuery({ name: 'genre', required: false, description: 'Filter by genre' })
-    @ApiQuery({ name: 'author', required: false, description: 'Filter by author' })
-    @ApiQuery({ name: 'title', required: false, description: 'Filter by title' })
-    @ApiQuery({ name: 'page', required: false, description: 'Pagination page number', type: Number })
-    @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit', type: Number })
     async getBooks(
         @Query('genre') genre?: string,
         @Query('author') author?: string,
@@ -62,10 +46,6 @@ export class BookController {
     @Get('/detail/:id')
     @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get details of a specific book' })
-    @ApiResponse({ status: 200, description: 'Book details retrieved successfully.' })
-    @ApiResponse({ status: 404, description: 'Book not found.' })
-    @ApiParam({ name: 'id', description: 'ID of the book to retrieve details' })
     async getBookDetail(@Param('id') id: string): Promise<Book> {
         return await this.bookService.findOne(id);
     }
@@ -74,10 +54,6 @@ export class BookController {
     @Roles('admin')
     @UseGuards(AuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Delete a book by ID' })
-    @ApiResponse({ status: 200, description: 'Book deleted successfully.' })
-    @ApiResponse({ status: 404, description: 'Book not found.' })
-    @ApiParam({ name: 'id', description: 'ID of the book to delete' })
     async deleteBook(@Param('id') id: string): Promise<{ message: string }> {
         return await this.bookService.remove(id);
 

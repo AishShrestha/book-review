@@ -10,10 +10,6 @@ export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('login')
-    @ApiOperation({ summary: 'User login' })
-    @ApiResponse({ status: 200, description: 'User logged in successfully. Returns a JWT token.' })
-    @ApiResponse({ status: 401, description: 'Unauthorized. Invalid username or password.' })
-    @ApiBody({ type: LoginUserDto })
     async login(@Body() loginUserDto: LoginUserDto): Promise<string> {
         return await this.authService.login(loginUserDto);
     }
